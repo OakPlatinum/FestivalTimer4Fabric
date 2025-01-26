@@ -1,11 +1,3 @@
 {
-	"required": true,
-	"package": "com.hz6826.festivaltimer.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"ExampleMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+	"required": false
 }
