@@ -10,6 +10,9 @@ import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.entity.boss.*;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -33,7 +36,7 @@ public class FestivalTimer implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static int cooldown = 0;
+	public static long lastUpdateTime = 0;
 
 	@Override
 	public void onInitialize() {
@@ -43,8 +46,8 @@ public class FestivalTimer implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.getBossBarManager().add(Identifier.of(BOSS_BAR_ID), Text.of("Festival Timer is Loading!")));
 		ServerTickEvents.END_SERVER_TICK.register(this::afterTick);
 
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(literal("festivaltimer")
-				.then(literal("reload").requires(source -> source.hasPermissionLevel(4)).executes(context -> {
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(literal("festivaltimer").requires(source -> source.hasPermissionLevel(4))
+				.then(literal("reload").executes(context -> {
 							Config.init(MOD_ID, Config.class);
 							context.getSource().sendFeedback(() -> Text.of(Config.prefix + Config.reloadConfigMessage), true);
 							return 1;
@@ -68,17 +71,22 @@ public class FestivalTimer implements ModInitializer {
 		bossBar.addPlayers(server.getPlayerManager().getPlayerList());
 
 		Text[] endTitle = getEndTitle();
-		if (endTitle[0] != null) {
-			if(cooldown > 0) {
-				cooldown--;
-				return;
-			}
-			cooldown = 20;
+		if (endTitle[0] != null && new Date().getTime() >= lastUpdateTime + 1000) {
 			server.getPlayerManager().sendToAll(new TitleFadeS2CPacket(0, 20, 0));
 			server.getPlayerManager().sendToAll(new TitleS2CPacket(endTitle[0]));
 			if (Config.enableEndSubTitleMessage) {
 				server.getPlayerManager().sendToAll(new SubtitleS2CPacket(endTitle[1]));
 			}
+			if (Config.enableEndSound) {
+				for (ServerPlayerEntity player: server.getPlayerManager().getPlayerList()) {
+					player.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket(
+							SoundEvents.BLOCK_NOTE_BLOCK_BELL,
+							SoundCategory.MASTER,
+							player.getX(), player.getY(), player.getZ(), 100, 1, 1
+					));
+				}
+			}
+			lastUpdateTime = new Date().getTime();
 		}
 	}
 
