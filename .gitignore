@@ -40,3 +40,4 @@ replay_*.log
 *.jfr
 
 plugin/
+/src/main/resources/assets/festivaltimer/icon.psd
