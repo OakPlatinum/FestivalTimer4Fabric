@@ -9,7 +9,7 @@
 	],
 	"contact": {
 		"homepage": "https://mln.hz6826.com.cn/",
-		"sources": "TODO"
+		"sources": "https://github.com/OakPlatinum/FestivalTimer4Fabric"
 	},
 	"license": "MIT",
 	"icon": "assets/festivaltimer/icon.png",
@@ -23,9 +23,9 @@
 		"festivaltimer.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.16.10",
-		"minecraft": "~1.21.1",
-		"java": ">=21",
+		"fabricloader": "*",
+		"minecraft": "~1.19.2",
+		"java": ">=17",
 		"fabric-api": "*"
 	},
 	"suggests": {
