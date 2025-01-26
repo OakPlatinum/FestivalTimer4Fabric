@@ -43,7 +43,7 @@ public class FestivalTimer implements ModInitializer {
 		Config.init(MOD_ID, Config.class);
 		Config.write(MOD_ID);
 
-		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.getBossBarManager().add(Identifier.of(BOSS_BAR_ID), Text.of("Festival Timer is Loading!")));
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> server.getBossBarManager().add(Identifier.of(BOSS_BAR_ID, "ft4f"), Text.of("Festival Timer is Loading!")));
 		ServerTickEvents.END_SERVER_TICK.register(this::afterTick);
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(literal("festivaltimer").requires(source -> source.hasPermissionLevel(4))
@@ -63,7 +63,7 @@ public class FestivalTimer implements ModInitializer {
 
 		BossBarManager bossBarManager = server.getBossBarManager();
 		// 更新 BossBar 的显示文本或进度
-		CommandBossBar bossBar = Objects.requireNonNull(bossBarManager.get(Identifier.of(BOSS_BAR_ID)));
+		CommandBossBar bossBar = Objects.requireNonNull(bossBarManager.get(Identifier.of(BOSS_BAR_ID, "ft4f")));
 
 		bossBar.setColor(BossBar.Color.byName(Config.bossBarColorName));
 		bossBar.setName(Text.of(getCountdown()).copy().formatted(bossBar.getColor().getTextFormat()));
